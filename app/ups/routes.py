@@ -5,7 +5,6 @@ from flask import request, jsonify
 from flask_restx import Resource
 from . import ups_ns
 
-
 @ups_ns.route('/token')
 class Token(Resource):
     def get(self):
@@ -78,7 +77,7 @@ class ShippingCost(Resource):
             else:
                 return None
 
-        def get_shipping_cost(access_token, shipper_info, to_address_info, from_address_info, package_info):
+        def get_shipping_cost(access_token, shipper_info, to_address_info, from_address_info, package_info, service_code):
             url = "https://onlinetools.ups.com/api/rating/v1/rate"
             headers = {
                 "Authorization": f"Bearer {access_token}",
@@ -145,8 +144,8 @@ class ShippingCost(Resource):
                             }
                         },
                         "Service": {
-                            "Code": package_info['service'],
-                            "Description": "ground"
+                            "Code": service_code,
+                            "Description": "Service"
                         },
                         "NumOfPieces": "1",
                         "Package": {
@@ -184,7 +183,7 @@ class ShippingCost(Resource):
                 return total_charges
             except KeyError as e:
                 print(f"KeyError: {e}")
-                return {'error': f"KeyError: {e}, Response Data: {response_data}"}, 500
+                return None
 
         shipper_info = {
             'account_number': ups_account_number,
@@ -221,7 +220,6 @@ class ShippingCost(Resource):
         }
 
         package_info = {
-            'service': '03',
             'package_type': '02',
             'Weight': '50',
             'length': '7',
@@ -229,14 +227,16 @@ class ShippingCost(Resource):
             'height': '2',
         }
 
+        service_codes = ['14', '01', '13', '59', '02', '12', '03']
+
         access_token = get_token(client_id, client_secret)
 
         if access_token is None:
             return jsonify({'error': 'Failed to retrieve access token'}), 500
 
-        total_charges = get_shipping_cost(access_token, shipper_info, to_address_info, from_address_info, package_info)
+        results = {}
+        for service_code in service_codes:
+            total_charges = get_shipping_cost(access_token, shipper_info, to_address_info, from_address_info, package_info, service_code)
+            results[service_code] = total_charges
 
-        if isinstance(total_charges, dict) and 'error' in total_charges:
-            return total_charges, 500
-        
-        return jsonify({'access token': access_token, 'total_charges': total_charges})
+        return jsonify({'access token': access_token, 'total_charges': results})
