@@ -44,7 +44,7 @@ get_shipping_cost() {
       "country": "US"
     },
     "package_info": {
-      "service": "03",  # This service code will be ignored in the API as we handle multiple services in the server.
+      "service": "03",
       "package_type": "02",
       "Weight": "50",
       "length": "7",
