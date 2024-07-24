@@ -1,8 +1,8 @@
+import base64
 import requests
 from flask import request, jsonify
 from flask_restx import Resource, Namespace
 from . import fedex_ns
-
 
 @fedex_ns.route('/token')
 class FedExToken(Resource):
@@ -32,6 +32,10 @@ class FedExToken(Resource):
 @fedex_ns.route('/rate-quote')
 class RateQuote(Resource):
     def post(self):
+        # Ensure the request Content-Type is application/json
+        if request.content_type != 'application/json':
+            return jsonify({"message": "Content-Type must be application/json"}), 415
+
         # Fetch request data
         data = request.json
         service_type = data.get('service_type', 'FEDEX_GROUND')  # Default to FEDEX_GROUND
