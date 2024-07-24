@@ -5,36 +5,26 @@ from flask import request, jsonify
 from flask_restx import Resource
 from . import ups_ns
 
-
 @ups_ns.route('/token')
 class Token(Resource):
     def get(self):
-        # Set your application credentials
         client_id = 'IPfM41sqLVodA9NfSUHZAAJ8AoGXR2XgShpgXjrsLqAwGJju'
         client_secret = '81o4lr2eDS2ytW0QushIXmID2CxEn9PPf5i0oH5P3S6tL2G8kafbUG9ll5C6ItxF'
         
-        # Encode the credentials
         credentials = base64.b64encode(f"{client_id}:{client_secret}".encode('utf-8')).decode('utf-8')
-        
-        # Prepare the payload
         payload = {'grant_type': 'client_credentials'}
-        
-        # Set the headers
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': f'Basic {credentials}'
         }
         
-        # Make the request
         response = requests.post('https://wwwcie.ups.com/security/v1/oauth/token', data=payload, headers=headers)
         
-        # Handle response
         if response.status_code == 200:
             response_data = response.json()
             access_token = response_data.get('access_token')
             refresh_token = response_data.get('refresh_token')
             
-            # Save the tokens to a file
             folder_path = os.path.join(os.path.dirname(__file__), 'tokens')
             if not os.path.exists(folder_path):
                 os.makedirs(folder_path)
@@ -58,6 +48,8 @@ class Token(Resource):
 @ups_ns.route('/shipping-cost')
 class ShippingCost(Resource):
     def post(self):
+        data = request.get_json()
+
         client_id = 'IPfM41sqLVodA9NfSUHZAAJ8AoGXR2XgShpgXjrsLqAwGJju'
         client_secret = '81o4lr2eDS2ytW0QushIXmID2CxEn9PPf5i0oH5P3S6tL2G8kafbUG9ll5C6ItxF'
         ups_account_number = 'J0469H'
@@ -78,7 +70,7 @@ class ShippingCost(Resource):
             else:
                 return None
 
-        def get_shipping_cost(access_token, shipper_info, to_address_info, from_address_info, package_info):
+        def get_shipping_cost(access_token, shipper_info, to_address_info, from_address_info, package_info, service_code):
             url = "https://onlinetools.ups.com/api/rating/v1/rate"
             headers = {
                 "Authorization": f"Bearer {access_token}",
@@ -98,9 +90,9 @@ class ShippingCost(Resource):
                             "ShipperNumber": shipper_info['account_number'],
                             "Address": {
                                 "AddressLine": [
-                                    shipper_info['address1'],
-                                    shipper_info['address2'],
-                                    shipper_info['address3']
+                                    shipper_info.get('address1', ''),
+                                    shipper_info.get('address2', ''),
+                                    shipper_info.get('address3', '')
                                 ],
                                 "City": shipper_info['city'],
                                 "StateProvinceCode": shipper_info['state'],
@@ -112,9 +104,9 @@ class ShippingCost(Resource):
                             "Name": to_address_info['name'],
                             "Address": {
                                 "AddressLine": [
-                                    to_address_info['address1'],
-                                    to_address_info['address2'],
-                                    to_address_info['address3']
+                                    to_address_info.get('address1', ''),
+                                    to_address_info.get('address2', ''),
+                                    to_address_info.get('address3', '')
                                 ],
                                 "City": to_address_info['city'],
                                 "StateProvinceCode": to_address_info['state'],
@@ -126,9 +118,9 @@ class ShippingCost(Resource):
                             "Name": from_address_info['name'],
                             "Address": {
                                 "AddressLine": [
-                                    from_address_info['address1'],
-                                    from_address_info['address2'],
-                                    from_address_info['address3']
+                                    from_address_info.get('address1', ''),
+                                    from_address_info.get('address2', ''),
+                                    from_address_info.get('address3', '')
                                 ],
                                 "City": from_address_info['city'],
                                 "StateProvinceCode": from_address_info['state'],
@@ -145,8 +137,8 @@ class ShippingCost(Resource):
                             }
                         },
                         "Service": {
-                            "Code": package_info['service'],
-                            "Description": "ground"
+                            "Code": service_code,
+                            "Description": "Service"
                         },
                         "NumOfPieces": "1",
                         "Package": {
@@ -184,59 +176,22 @@ class ShippingCost(Resource):
                 return total_charges
             except KeyError as e:
                 print(f"KeyError: {e}")
-                return {'error': f"KeyError: {e}, Response Data: {response_data}"}, 500
+                return None
 
-        shipper_info = {
-            'account_number': ups_account_number,
-            'name': 'Mr. President',
-            'address1': '1600 Pennsylvania Avenue NW',
-            'address2': '',
-            'address3': '',
-            'city': 'Washington',
-            'state': 'DC',
-            'zip': '20500',
-            'country': 'US',
-        }
-
-        from_address_info = {
-            'name': 'Mr. President',
-            'address1': '1600 Pennsylvania Avenue NW',
-            'address2': '',
-            'address3': '',
-            'city': 'Washington',
-            'state': 'DC',
-            'zip': '20500',
-            'country': 'US',
-        }
-
-        to_address_info = {
-            'name': 'Thomas Jefferson',
-            'address1': '931 Thomas Jefferson Parkway',
-            'address2': '',
-            'address3': '',
-            'city': 'Charlottesville',
-            'state': 'VA',
-            'zip': '22902',
-            'country': 'US',
-        }
-
-        package_info = {
-            'service': '03',
-            'package_type': '02',
-            'Weight': '50',
-            'length': '7',
-            'width': '4',
-            'height': '2',
-        }
+        shipper_info = data['shipper_info']
+        from_address_info = data['from_address_info']
+        to_address_info = data['to_address_info']
+        package_info = data['package_info']
+        service_codes = data['service_codes']
 
         access_token = get_token(client_id, client_secret)
 
         if access_token is None:
             return jsonify({'error': 'Failed to retrieve access token'}), 500
 
-        total_charges = get_shipping_cost(access_token, shipper_info, to_address_info, from_address_info, package_info)
+        results = {}
+        for service_code in service_codes:
+            total_charges = get_shipping_cost(access_token, shipper_info, to_address_info, from_address_info, package_info, service_code)
+            results[service_code] = total_charges
 
-        if isinstance(total_charges, dict) and 'error' in total_charges:
-            return total_charges, 500
-        
-        return jsonify({'access token': access_token, 'total_charges': total_charges})
+        return jsonify({'access token': access_token, 'total_charges': results})

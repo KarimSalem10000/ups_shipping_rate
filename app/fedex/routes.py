@@ -1,6 +1,6 @@
 import base64
 import requests
-from flask import request, jsonify
+from flask import request, jsonify, make_response
 from flask_restx import Resource, Namespace
 from . import fedex_ns
 
@@ -20,23 +20,20 @@ class FedExToken(Resource):
         response = requests.post(url, data=payload, headers=headers)
         
         if response.status_code == 200:
-            return response.json()
+            response_data = response.json()
+            return make_response(jsonify(response_data), 200)
         else:
-            return {
+            response_data = {
                 'error': 'Failed to retrieve token',
                 'status_code': response.status_code,
                 'response': response.text
-            }, response.status_code
+            }
+            return make_response(jsonify(response_data), response.status_code)
 
 
 @fedex_ns.route('/rate-quote')
 class RateQuote(Resource):
     def post(self):
-        # Ensure the request Content-Type is application/json
-        if request.content_type != 'application/json':
-            return jsonify({"message": "Content-Type must be application/json"}), 415
-
-        # Fetch request data
         data = request.json
         service_type = data.get('service_type', 'FEDEX_GROUND')  # Default to FEDEX_GROUND
 
@@ -44,21 +41,43 @@ class RateQuote(Resource):
         access_token = get_fedex_token()
 
         if not access_token:
-            return jsonify({"message": "Failed to retrieve FedEx access token"}), 500
+            response_data = {"message": "Failed to retrieve FedEx access token"}
+            return make_response(jsonify(response_data), 500)
 
         # Request payload for rate quotes
         payload = {
             "accountNumber": {"value": "740561073"},
             "rateRequestControlParameters": {"returnTransitTimes": True},
             "requestedShipment": {
-                "shipper": {"address": {"postalCode": "94105", "countryCode": "US"}},
-                "recipient": {"address": {"postalCode": "10001", "countryCode": "US"}},
+                "shipper": {
+                    "address": {
+                        "streetLines": [data['originStreet'], data['originApt']],
+                        "city": data['originCity'],
+                        "stateOrProvinceCode": data['originState'],
+                        "postalCode": data['originZip'],
+                        "countryCode": "US"
+                    }
+                },
+                "recipient": {
+                    "address": {
+                        "streetLines": [data['destStreet'], data['destApt']],
+                        "city": data['destCity'],
+                        "stateOrProvinceCode": data['destState'],
+                        "postalCode": data['destZip'],
+                        "countryCode": "US"
+                    }
+                },
                 "pickupType": "DROPOFF_AT_FEDEX_LOCATION",
-                "shipmentRateDetail": {"rateType": ["LIST"], "rateScale": "PL"},
+                "rateRequestType": ["ACCOUNT"],
                 "requestedPackageLineItems": [{
                     "groupPackageCount": 1,
-                    "weight": {"units": "LB", "value": 10},
-                    "dimensions": {"length": 10, "width": 10, "height": 10, "units": "IN"}
+                    "weight": {"units": "LB", "value": float(data['weight'])},
+                    "dimensions": {
+                        "length": float(data['packageLength']),
+                        "width": float(data['packageWidth']),
+                        "height": float(data['packageHeight']),
+                        "units": "IN"
+                    }
                 }]
             }
         }
@@ -74,19 +93,22 @@ class RateQuote(Resource):
         )
 
         if response.status_code != 200:
-            return jsonify({"message": "Failed to get rate quotes", "error": response.json()}), response.status_code
+            response_data = {"message": "Failed to get rate quotes", "error": response.json()}
+            return make_response(jsonify(response_data), response.status_code)
 
         rate_details = response.json().get('output', {}).get('rateReplyDetails', [])
 
         for rate_detail in rate_details:
             if rate_detail['serviceType'] == service_type:
                 total_cost = rate_detail['ratedShipmentDetails'][0]['totalNetCharge']
-                return jsonify({
+                response_data = {
                     "service_type": service_type,
                     "total_cost": total_cost
-                })
+                }
+                return make_response(jsonify(response_data), 200)
 
-        return jsonify({"message": f"Service type {service_type} not found in the response"}), 404
+        response_data = {"message": f"Service type {service_type} not found in the response"}
+        return make_response(jsonify(response_data), 404)
 
 
 def get_fedex_token():
