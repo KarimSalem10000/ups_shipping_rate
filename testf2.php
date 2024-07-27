@@ -1,7 +1,7 @@
 <?php
 
 // Access token
-$accessToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6WyJDWFMtVFAiXSwiUGF5bG9hZCI6eyJjbGllbnRJZGVudGl0eSI6eyJjbGllbnRLZXkiOiJsN2NkMTVhNmVkZGY4YjRiMTNiODI3ZjEyZDNiN2U4YjUwIn0sImF1dGhlbnRpY2F0aW9uUmVhbG0iOiJDTUFDIiwiYWRkaXRpb25hbElkZW50aXR5Ijp7InRpbWVTdGFtcCI6IjE5LUp1bi0yMDI0IDE3OjM1OjUyIEVTVCIsImdyYW50X3R5cGUiOiJjbGllbnRfY3JlZGVudGlhbHMiLCJhcGltb2RlIjoiU2FuZGJveCIsImN4c0lzcyI6Imh0dHBzOi8vY3hzYXV0aHNlcnZlci1zdGFnaW5nLmFwcC5wYWFzLmZlZGV4LmNvbS90b2tlbi9vYXV0aDIifSwicGVyc29uYVR5cGUiOiJEaXJlY3RJbnRlZ3JhdG9yX0IyQiJ9LCJleHAiOjE3MTg4NDAxNTIsImp0aSI6ImUwYzU5OTRkLWYxNGItNGM2Yi1iNGNlLTU1NjM5MWI1ODMzNSJ9.xh_Q5XlTixikCMzYGf16AlRRJrxvLEDfNFYXFlu3HmnBS_c1KGG9Tj5HXC5M27WNPU6SSyIf3U1XnkOlk3RrQwU34WcTgdyif8ednNhKLk0QCnnvLjnRU-QD2bEYPhnln7o5cJtG8n20CtQ1Yjirc233qJmnfWpalJVvlo-h-UXR1R0pyziU6QDSEhlop2exx5ajVLcP05kbpKYjgsmzaiWj2_gJz55u8BiCg9afyUvxpzmmWxFlZ51d4Rvu_T91XpAJc2x7Q8IgZmDJBmU-JvReLoBJM6E1aVyQ84JRgkl4NXuD715o2HX8fquJML10_cv0N0d3THD-tfuunayv5pZAbPh4M6DTY-14KPL-Uqs2-7IBqd09wbqb4hAYDdM8XCLz9z7ZgJK0iP6T4YP4VB-5LjcenXUghp-FgwpP-3y_rRLP9C375b-8X3QQRe-Qmd4ejeKTlrRcK_s60L0_qBvrdbi_iL1-44dNJpXNXtmWbQ-tKIoP-175xB1nvTQeGQhKmeDSoExCXGFJPwmf7ArffWR2VxkOagoUhmf7_jWVV5_bKEQuPQlwOzgzDhEqVA3COOzr2N5puK8SSV6OAkXtLkrL9du76EQXx-npH-kwqAAeBh848ZL5zflTh9OXE-_KfmN_MHwF4o8NaLhwN8TCOZjnKG3RF10h4xMgvmw';
+$accessToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6WyJDWFMtVFAiXSwiUGF5bG9hZCI6eyJjbGllbnRJZGVudGl0eSI6eyJjbGllbnRLZXkiOiJsN2NkMTVhNmVkZGY4YjRiMTNiODI3ZjEyZDNiN2U4YjUwIn0sImF1dGhlbnRpY2F0aW9uUmVhbG0iOiJDTUFDIiwiYWRkaXRpb25hbElkZW50aXR5Ijp7InRpbWVTdGFtcCI6IjI0LUp1bC0yMDI0IDIxOjA1OjUzIEVTVCIsImdyYW50X3R5cGUiOiJjbGllbnRfY3JlZGVudGlhbHMiLCJhcGltb2RlIjoiU2FuZGJveCIsImN4c0lzcyI6Imh0dHBzOi8vY3hzYXV0aHNlcnZlci1zdGFnaW5nLmFwcC5wYWFzLmZlZGV4LmNvbS90b2tlbi9vYXV0aDIifSwicGVyc29uYVR5cGUiOiJEaXJlY3RJbnRlZ3JhdG9yX0IyQiJ9LCJleHAiOjE3MjE4NzY3NTMsImp0aSI6IjA5Y2I5ODM3LWQxNGEtNGQwZC04ODA5LTcyYzM5OGQzNjk0NSJ9.u0aody0NomvmokXKna5UiW05pxghTD-dlqdBwG4Q4nt2OP-58db9cS4zP5unycJbzN_POq0Zx8R6PvLHJ8X9aWRRXSYY7oY8r2CKZ-ZnmZTC7Wp2pekpFZnxqsPX04ke3hNy5_kZ8jxJTQZ8P6sgoilJysd0qewKTX0L3w6NL7Pm9NuDbUJqQ_u7__55tJiw3pBbI0lEHwe34ypshYX4adfI54eVgYmxTPvSaNuqVOg-_pgq4_YCXxVnQAc55zjciC5t07o5ttglrUVBQ_sjoydtADY5XPI5oKjnDIzJbLJ5NSOMZTAhd1g9kyMNCkfhG8fpwsiddNIy0L_OkxWf2dEWs4mL-QvtHZt8ggnQ-tijEDUSVvStQKyuXzXoMAbWQGUQ_zqFwgaGuaRtz1ItFHyrBHpYguP0k6qfc4_CJPi3sXKW6YIhKfCODo-BjTKvQWK1Z2bhttmmWX3sjHlivwUGNredAkXETb3-SZq8nAC75khIn_zrUvrIMDCpYcfAXSMNpMJsvk1BgKpyprSOMCZRDZoeXm1sRlzB1Zy1lZEYaM9O5A4XG5DnyDZyl5PX1eZ51NYiuwT950rG6N2CLmtbVcXrD4IKzTuI6-lfH0j2SLvT4bq9FL8Vap73BgdQvHPgAHNXWzjA7J6d6X1PC97OPKkdkMcMQqn6LTbplRM'; // Replace with the new access token
 
 // JSON payload
 $input = json_encode(array(
@@ -14,13 +14,13 @@ $input = json_encode(array(
     "requestedShipment" => array(
         "shipper" => array(
             "address" => array(
-                "postalCode" => "94105", // Example postal code
+                "postalCode" => "12345", // Example postal code
                 "countryCode" => "US" // Example country code
             )
         ),
         "recipient" => array(
             "address" => array(
-                "postalCode" => "10001", // Example postal code
+                "postalCode" => "67890", // Example postal code
                 "countryCode" => "US" // Example country code
             )
         ),
@@ -31,14 +31,15 @@ $input = json_encode(array(
                 "groupPackageCount" => 1,
                 "weight" => array(
                     "units" => "LB",
-                    "value" => 10
+                    "value" => 2.0
                 ),
                 "dimensions" => array(
                     "length" => 10,
                     "width" => 10,
                     "height" => 10,
                     "units" => "IN"
-                )
+                ),
+                "packagingType" => "FEDEX_BOX" // Example packaging type
             )
         )
     )
@@ -52,6 +53,9 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, $input);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HEADER, true); // Include headers in the output
 curl_setopt($ch, CURLINFO_HEADER_OUT, true); // Track the request headers
+
+// Disable SSL verification (not recommended for production)
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
 $headers = array();
 $headers[] = 'Authorization: Bearer ' . $accessToken;
@@ -96,8 +100,8 @@ if (curl_errno($ch)) {
         $desiredServiceType = 'FEDEX_GROUND'; // Change this to the service type you want
 
         // Find and print the total cost for the desired service type
-        if (isset($data['output']['rateReplyDetails'])) {
-            foreach ($data['output']['rateReplyDetails'] as $rateDetail) {
+        if (isset($data['rateReplyDetails'])) {
+            foreach ($data['rateReplyDetails'] as $rateDetail) {
                 if ($rateDetail['serviceType'] === $desiredServiceType) {
                     $totalCost = $rateDetail['ratedShipmentDetails'][0]['totalNetCharge'];
                     echo "Total cost for $desiredServiceType: $totalCost\n";
@@ -111,3 +115,8 @@ if (curl_errno($ch)) {
 }
 
 curl_close($ch);
+
+
+
+
+
