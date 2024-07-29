@@ -3,6 +3,7 @@ from flask import request, jsonify
 from flask_restx import Namespace, Resource
 import logging
 from . import usps_ns as api
+import xml.etree.ElementTree as ET
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -27,14 +28,14 @@ def get_oauth_token(consumer_key, consumer_secret):
     return response_data.get('access_token'), response.status_code, response.text
 
 # Function to get shipping rates
-def get_shipping_rates(access_token, user_id, package_details):
+def get_shipping_rates(access_token, user_id, package_details, service):
     url = "http://production.shippingapis.com/ShippingAPI.dll"
 
     xml_request = f"""
     <RateV4Request USERID="{user_id}">
         <Revision>2</Revision>
         <Package ID="0">
-            <Service>PRIORITY</Service>
+            <Service>{service}</Service>
             <ZipOrigination>{package_details['ZipOrigination']}</ZipOrigination>
             <ZipDestination>{package_details['ZipDestination']}</ZipDestination>
             <Pounds>{package_details['Pounds']}</Pounds>
@@ -54,8 +55,12 @@ def get_shipping_rates(access_token, user_id, package_details):
     
     if response.status_code != 200:
         logger.error(f"Failed to get shipping rates: {response.status_code} {response.text}")
-    
-    return response.status_code, response.text
+        return response.status_code, response.text
+
+    # Parse the XML response to extract the base rate
+    root = ET.fromstring(response.text)
+    rate = root.find('.//Postage/Rate').text
+    return response.status_code, rate
 
 @api.route('/get_token')
 class GetToken(Resource):
@@ -75,14 +80,15 @@ class GetToken(Resource):
 class GetRates(Resource):
     def get(self):
         access_token = request.args.get('access_token')
-        # Hardcoded user ID
-        user_id = '826ADISY3274'
-        zip_origination = '07305'
-        zip_destination = '26301'
-        pounds = 8
-        ounces = 2.5
+        service = request.args.get('service')
+        # User-provided details
+        zip_origination = request.args.get('zip_origination')
+        zip_destination = request.args.get('zip_destination')
+        pounds = request.args.get('pounds')
         
-
+        # Convert pounds to ounces
+        ounces = float(pounds) * 16
+        
         package_details = {
             'ZipOrigination': zip_origination,
             'ZipDestination': zip_destination,
@@ -90,12 +96,12 @@ class GetRates(Resource):
             'Ounces': ounces
         }
 
-        status_code, response = get_shipping_rates(access_token, user_id, package_details)
+        status_code, rate = get_shipping_rates(access_token, '826ADISY3274', package_details, service)
         
         if status_code != 200:
-            return {"error": "Failed to get shipping rates.", "status_code": status_code, "response": response}, status_code
+            return {"error": "Failed to get shipping rates.", "status_code": status_code, "response": rate}, status_code
         
-        return {"shipping_rates": response}, status_code
+        return {"shipping_rate": rate}, status_code
 
 # Adding the namespace to the api (assuming the API is created elsewhere)
 # Example: api.add_namespace(api, path='/api/usps')
