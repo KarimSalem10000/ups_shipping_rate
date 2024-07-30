@@ -3,6 +3,7 @@ from .extentions import api, db
 from .resources import ns
 from .fedex import fedex_ns
 from .ups import ups_ns 
+from .usps import usps_ns
 
 def create_app():
     app = Flask(__name__)
@@ -16,6 +17,7 @@ def create_app():
     api.add_namespace(ns)
     api.add_namespace(fedex_ns)
     api.add_namespace(ups_ns)
+    api.add_namespace(usps_ns)
 
     return app
 
